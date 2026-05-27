@@ -3,7 +3,9 @@ package com.sspu.hitlchat.config;
 
 import com.sspu.hitlchat.tools.BuiltinTools;
 import io.agentscope.core.tool.Toolkit;
+import io.agentscope.core.tool.coding.ShellCommandTool;
 import io.agentscope.core.tool.file.ReadFileTool;
+import io.agentscope.core.tool.file.WriteFileTool;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,6 +17,8 @@ public class ToolConfig {
         Toolkit toolkit = new Toolkit();
 
         toolkit.registerTool(new ReadFileTool());
+        toolkit.registerTool(new WriteFileTool());
+        toolkit.registerTool(new ShellCommandTool());
         toolkit.registerTool(new BuiltinTools());
 
         return toolkit;

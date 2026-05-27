@@ -129,6 +129,7 @@ const state = {
     availableTools: new Set(),
     pendingToolCalls: null,
     currentAbortController: null,
+    currentAssistantRawText: '',
     lang: 'en'
 };
 
@@ -149,7 +150,8 @@ const elements = {
     httpOptions: document.getElementById('http-options'),
     saveDangerousToolsBtn: document.getElementById('save-dangerous-tools-btn'),
     langEn: document.getElementById('lang-en'),
-    langZh: document.getElementById('lang-zh')
+    langZh: document.getElementById('lang-zh'),
+    themeToggle: document.getElementById('theme-toggle')
 };
 
 function t(key) {
@@ -181,7 +183,42 @@ function setLanguage(lang) {
     updateI18n();
 }
 
+function initTheme() {
+    const saved = localStorage.getItem('hitl-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+}
+
+function toggleTheme() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    if (next === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('hitl-theme', 'dark');
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('hitl-theme', 'light');
+    }
+}
+
+function configureMarked() {
+    // no-op: options passed inline to marked.parse() for version compat
+}
+
+function renderMarkdown(text) {
+    if (typeof marked === 'undefined') return escapeHtml(text);
+    try {
+        return marked.parse(text, { gfm: true, breaks: true });
+    } catch (e) {
+        return escapeHtml(text);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+    configureMarked();
     loadMcpServers();
     loadTools();
     loadDangerousTools();
@@ -205,6 +242,7 @@ function setupEventListeners() {
     elements.saveDangerousToolsBtn.addEventListener('click', saveDangerousTools);
     elements.langEn.addEventListener('click', () => setLanguage('en'));
     elements.langZh.addEventListener('click', () => setLanguage('zh'));
+    elements.themeToggle.addEventListener('click', toggleTheme);
 }
 
 async function sendMessage() {
@@ -313,14 +351,16 @@ function handleChatEvent(event) {
 function addMessage(role, content) {
     const div = document.createElement('div');
     div.className = `message ${role}`;
+    const rendered = renderMarkdown(content);
     div.innerHTML = `
         <div class="message-label">${role === 'user' ? t('you') : t('assistant')}</div>
-        <div class="message-content">${escapeHtml(content)}</div>
+        <div class="message-content">${rendered}</div>
     `;
     elements.chatMessages.appendChild(div);
     scrollToBottom();
     if (role === 'assistant') {
         state.currentAssistantMessage = div.querySelector('.message-content');
+        state.currentAssistantRawText = content;
     }
 }
 
@@ -328,13 +368,15 @@ function appendToAssistantMessage(content) {
     if (!state.currentAssistantMessage) {
         addMessage('assistant', content);
     } else {
-        state.currentAssistantMessage.textContent += content;
+        state.currentAssistantRawText += content;
+        state.currentAssistantMessage.innerHTML = renderMarkdown(state.currentAssistantRawText);
         scrollToBottom();
     }
 }
 
 function finalizeAssistantMessage() {
     state.currentAssistantMessage = null;
+    state.currentAssistantRawText = '';
 }
 
 function addToolUseEvent(toolId, toolName, input, needsConfirm) {

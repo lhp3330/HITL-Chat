@@ -65,3 +65,4 @@ logs/
 
 src/main/resources/.env
 
+sessions

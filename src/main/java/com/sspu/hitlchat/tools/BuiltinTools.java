@@ -13,11 +13,6 @@ public class BuiltinTools {
 
     private final Random random = new Random();
 
-    /**
-     * Get the current date and time.
-     *
-     * @return Current date and time
-     */
     @Tool(name = "get_time", description = "Get the current date and time")
     public ToolResultBlock getTime() {
         LocalDateTime now = LocalDateTime.now();
@@ -25,13 +20,6 @@ public class BuiltinTools {
         return ToolResultBlock.text("Current time: " + now.format(formatter));
     }
 
-    /**
-     * Generate a random number within a specified range.
-     *
-     * @param min Minimum value (inclusive)
-     * @param max Maximum value (inclusive)
-     * @return A random number
-     */
     @Tool(name = "random_number", description = "Generate a random integer within a specified range")
     public ToolResultBlock randomNumber(
             @ToolParam(name = "min", description = "Minimum value (inclusive)") int min,
