@@ -79,10 +79,8 @@ hitl-chat/
 编辑 `src/main/resources/.env`：
 
 ```env
-DASHSCOPE_MODEL=qwen3.6-plus
-DASHSCOPE_API_KEY=你的API密钥
-DASHSCOPE_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions
-mcp=https://dashscope.aliyuncs.com/api/v1/mcps/market-cmapi013828/mcp
+DASHSCOPE_MODEL=<MODEL_NAME>
+DASHSCOPE_API_KEY=<YOUR_API_KEY>
 ```
 
 ### 2. 启动应用
