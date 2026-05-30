@@ -234,7 +234,3 @@ spring:
 6. Agent 循环推理（最多 10 轮），结果以 `Flux<ChatEvent>` 通过 SSE 推送到前端
 7. 遇到高危工具调用 → 暂停 → 用户确认 → 继续
 8. 所有 API 请求经 `LoggingAspect` 自动记录日志
-
-## 许可证
-
-Apache License 2.0
