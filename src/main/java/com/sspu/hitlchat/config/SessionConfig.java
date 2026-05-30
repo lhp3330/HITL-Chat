@@ -17,7 +17,6 @@ public class SessionConfig {
     @Bean
     public Session jsonSession() {
         Path sessionPath = Path.of("sessions").toAbsolutePath();
-//        Path sessionPath = Path.of("E:\\java\\hitl-chat\\src\\main\\resources\\sessions");
         try {
             Files.createDirectories(sessionPath);
         } catch (IOException e) {
